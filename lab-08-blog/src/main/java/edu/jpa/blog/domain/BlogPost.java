@@ -7,10 +7,24 @@ import java.util.Date;
  * @author Anton German &lt;AGerman@luxoft.com&gt;
  * @version 1.0 09.03.15
  */
+@Entity
+@Table(name = "BLOG_POST")
+@AttributeOverrides({
+        @AttributeOverride(name = "id", column = @Column(name = "POST_ID")),
+        @AttributeOverride(name = "version", column = @Column(name = "POST_VERSION"))
+})
+@NamedQuery(name="findByBlog", query="select P from BlogPost P where P.blog.id = :id")
 public class BlogPost extends DomainObject {
+    @Column(name = "POST_DATE")
     private Date date;
+    @Column(name = "POST_TITLE")
     private String title;
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "POST_TEXT")
     private String text;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "BLOG_ID")
     private Blog blog;
 
 

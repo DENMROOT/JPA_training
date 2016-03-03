@@ -7,9 +7,23 @@ import java.util.List;
  * @author Anton German &lt;AGerman@luxoft.com&gt;
  * @version 1.0 09.03.15
  */
+@Entity
+@SuppressWarnings("JpaQlInspection")
+@Table(name = "BLOG")
+@AttributeOverrides({
+        @AttributeOverride(name = "id", column = @Column(name = "BLOG_ID")),
+        @AttributeOverride(name = "version", column = @Column(name = "BLOG_VERSION"))
+})
+@NamedQueries(
+        @NamedQuery(name="findAll", query="select B from Blog B order by B.name")
+)
+
 public class Blog extends DomainObject {
+    @Column(name = "BLOG_NAME")
     private String name;
+    @Column(name = "BLOG_AUTHOR")
     private String author;
+    @OneToMany(mappedBy = "blog", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<BlogPost> posts;
 
 

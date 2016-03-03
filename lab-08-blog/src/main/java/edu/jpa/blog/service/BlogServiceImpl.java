@@ -1,27 +1,55 @@
 package edu.jpa.blog.service;
 
+import edu.jpa.blog.domain.Blog;
 import edu.jpa.blog.service.dto.BlogDTO;
+import org.springframework.stereotype.Repository;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author Anton German &lt;AGerman@luxoft.com&gt;
  * @version 1.0 09.03.15
  */
+@Repository
+@Transactional(javax.transaction.Transactional.TxType.REQUIRED)
 public class BlogServiceImpl implements BlogService {
+    @PersistenceContext
+    private EntityManager em;
+
     public List<BlogDTO> getBlogs() {
-        throw new UnsupportedOperationException("Method is not implemented yet.");
+        final TypedQuery<Blog> query = em.createNamedQuery("findAll", Blog.class);
+        final List<Blog> blogs = query.getResultList();
+        final List<BlogDTO> result = new ArrayList<BlogDTO>(blogs.size());
+        for (final Blog blog : blogs) {
+            result.add(new BlogDTO(blog));
+        }
+        return result;
     }
 
     public BlogDTO getBlog(int id) {
-        throw new UnsupportedOperationException("Method is not implemented yet.");
+        final Blog blog = em.find(Blog.class, id);
+        return new BlogDTO(blog);
     }
 
     public void removeBlog(int id) {
-        throw new UnsupportedOperationException("Method is not implemented yet.");
+        final Blog blog = em.find(Blog.class, id);
+        em.remove(blog);
     }
 
     public void modifyBlog(BlogDTO blog) {
-        throw new UnsupportedOperationException("Method is not implemented yet.");
+        final Blog persistedBlog;
+        if (blog.getId() > 0) {
+            persistedBlog = em.find(Blog.class, blog.getId());
+        } else {
+            persistedBlog = new Blog();
+        }
+        persistedBlog.setAuthor(blog.getAuthor());
+        persistedBlog.setName(blog.getName());
+        em.persist(persistedBlog);
     }
 }
